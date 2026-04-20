@@ -1,0 +1,51 @@
+{
+  "_comment": "深索 (MindForge) OpenClaw 配置示例",
+  "_version": "1.0.0",
+  "_updated": "2026-04-20",
+  
+  "heartbeat": {
+    "enabled": true,
+    "intervalMinutes": 30,
+    "prompt": "检查 state.md heartbeat_count 与预期不符 → 告警；execution-log.md 超 24h 无新记录 → 告警；judgment-core.md 超 2000 tokens → 告警「需要 DISTILL」；continuation.md 超 80 行 → 自动归档；dod-pending.md 存在「轮次计数 ≥2」的条目 → 告警「本 agent 伪完成未补齐」",
+    "model": "qwen3.5-plus"
+  },
+  
+  "agents": {
+    "defaults": {
+      "skill": "mindforge-core",
+      "model": "qwen3.5-plus",
+      "thinking": "adaptive"
+    }
+  },
+  
+  "skills": {
+    "mindforge-core": {
+      "path": "skills/mindforge-core/SKILL.md",
+      "enabled": true,
+      "config": {
+        "trace_path": "memory/thinking-traces",
+        "min_da_length": 50,
+        "force_root_cause": true,
+        "force_counterexample": true
+      }
+    }
+  },
+  
+  "cron": {
+    "enabled": true,
+    "jobs": [
+      {
+        "name": "深索定时检查",
+        "schedule": {
+          "kind": "every",
+          "everyMs": 1800000
+        },
+        "payload": {
+          "kind": "systemEvent",
+          "text": "检查今日 Trace 写入状态，统计 PASSED 率，告警异常"
+        },
+        "enabled": true
+      }
+    ]
+  }
+}

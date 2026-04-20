@@ -1,0 +1,133 @@
+# 深索 Cron 任务示例
+
+> 用于 OpenClaw 定时任务配置
+
+---
+
+## 📋 任务列表
+
+### 1. 思进引擎定时检查（每 30 分钟）
+
+```yaml
+name: 深索定时检查
+schedule:
+  kind: every
+  everyMs: 1800000  # 30 分钟
+payload:
+  kind: systemEvent
+  text: 检查今日 Trace 写入状态，统计 PASSED 率，告警异常
+enabled: true
+```
+
+### 2. Token & 状态监控（每小时）
+
+```yaml
+name: Token & 状态监控
+schedule:
+  kind: every
+  everyMs: 3600000  # 1 小时
+payload:
+  kind: systemEvent
+  text: 检查 token 使用量、模型状态、Gateway 健康
+enabled: true
+```
+
+### 3. 夜间演进（每日 23:00）
+
+```yaml
+name: 深索夜间演进
+schedule:
+  kind: cron
+  expr: 0 23 * * *
+  tz: Asia/Shanghai
+payload:
+  kind: agentTurn
+  message: |
+    执行深索夜间演进：
+    1. 统计今日 Trace 数量、PASSED 率、失败模式
+    2. 识别成功模式与问题模式
+    3. 提出明日改进假设
+    4. 写入 memory/YYYY-MM-DD.md
+enabled: true
+```
+
+### 4. 深索定时检查（每 30 分钟）
+
+```yaml
+name: 深索定时检查
+schedule:
+  kind: every
+  everyMs: 1800000
+payload:
+  kind: systemEvent
+  text: 检查 state.md heartbeat_count、execution-log.md 24h 无新记录、judgment-core.md 超 2000 tokens、continuation.md 超 80 行
+enabled: true
+```
+
+---
+
+## 🔧 完整配置示例
+
+```json
+{
+  "cron": {
+    "enabled": true,
+    "jobs": [
+      {
+        "name": "深索定时检查",
+        "schedule": {
+          "kind": "every",
+          "everyMs": 1800000
+        },
+        "payload": {
+          "kind": "systemEvent",
+          "text": "检查 state.md heartbeat_count、execution-log.md 24h 无新记录、judgment-core.md 超 2000 tokens、continuation.md 超 80 行"
+        },
+        "enabled": true
+      },
+      {
+        "name": "深索夜间演进",
+        "schedule": {
+          "kind": "cron",
+          "expr": "0 23 * * *",
+          "tz": "Asia/Shanghai"
+        },
+        "payload": {
+          "kind": "agentTurn",
+          "message": "执行深索夜间演进：统计今日 Trace、分析失败模式、提出改进假设",
+          "timeoutSeconds": 300
+        },
+        "enabled": true
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 📊 验证命令
+
+```bash
+# 查看 cron 任务列表
+openclaw cron list
+
+# 查看 cron 调度器状态
+openclaw cron status
+
+# 手动触发任务
+openclaw cron run <jobId>
+```
+
+---
+
+## ⚠️ 注意事项
+
+1. **时区**：使用 `Asia/Shanghai`（UTC+8）
+2. **超时**：agentTurn 任务设置 `timeoutSeconds`（建议 300 秒）
+3. **幂等**：任务可重复执行，无副作用
+4. **告警**：失败时通过 heartbeat 告警
+
+---
+
+**最后更新：2026-04-20**
