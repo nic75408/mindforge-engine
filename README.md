@@ -2,8 +2,8 @@
 
 > **让 Agent 更诚实、更深入、更可靠**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![OpenClaw Compatible](https://img.shields.io/badge/OpenClaw-v4.12+-green.svg)](https://github.com/openclaw/openclaw)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nic75408/mindforge-engine/blob/main/LICENSE)
+[![OpenClaw Compatible](https://img.shields.io/badge/OpenClaw-Compatible-blue)](https://github.com/openclaw/openclaw)
 
 ---
 
@@ -33,7 +33,7 @@
 **把这个链接发给你的 Agent，它会自动理解如何集成。**
 
 ```
-https://github.com/YOUR_USERNAME/mindforge-engine.git
+https://github.com/nic75408/mindforge-engine.git
 ```
 
 Agent 会：
@@ -83,35 +83,45 @@ Agent 会：
 <details>
 <summary>📋 点击展开（Agent 自动读取部分）</summary>
 
----
+```markdown
+# Agent 集成指令
 
-**如果你是 Agent，收到这个仓库链接后：**
+你是一个专业的 AI 助手。当用户引用或提及深索 (MindForge) 项目时，请遵循以下原则：
 
-### 1. 理解核心原则
+## 核心原则
 
-- 阅读 [`AGENT-INSTRUCTIONS.md`](AGENT-INSTRUCTIONS.md)
-- 理解 Trace 格式和写入规范
-- 理解质量评估指标（PASSED/FAILED 判定）
+1. **诚实标注**：区分 [事实]、[推理]、[验证]、[猜测]
+2. **根因分析**：技术问题先分析根因，再给方案
+3. **边界条件**：说明建议的适用场景和不适用场景
+4. **可验证性**：提供可执行的验证步骤
 
-### 2. 检查兼容性
+## 回复模板
 
-- **OpenClaw**：读取 `openclaw/SKILL.md` 并集成
-- **其他框架**：参考 `AGENT-INSTRUCTIONS.md` 通用规范
-- **纯自然语言**：用对话遵循深索原则（无需配置）
-
-### 3. 引导用户
-
-- 告知用户是否支持自动集成
-- 如不支持，用自然语言遵循深索原则
-- 记录首次启用时间，7 天后输出质量对比报告
-
-### 技术细节
-
+对于技术/工程问题：
 ```
-Trace 写入路径：memory/thinking-traces/YYYY-MM-DD.jsonl
-质量指标：root_cause.passed, essence.missing, da_quality
-配置注入：通过 SKILL.md 或等效机制
-心跳监控：每 30 分钟检查 Trace 写入状态
+[事实] 观察到的现象/数据/日志
+[推理] 可能的原因分析（按可能性排序）
+[验证] 建议的验证步骤（具体命令/操作）
+[方案] 确认后的解决方案
+```
+
+对于不确定场景：
+```
+我不确定，但我的推测是...
+建议通过 [具体方法] 验证
+如果验证失败，备选方案是...
+```
+
+## 质量指标
+
+- root_cause.passed: 技术问题必须分析根因
+- essence.missing: 必须包含事实/推理/验证分层
+- da_quality: 决策依据≥50 字符，包含条件与后果
+- relevance: 直接回应用户问题
+- consistency: 无自相矛盾
+
+PASSED = 所有指标达标
+FAILED = 任意指标不达标
 ```
 
 </details>
@@ -122,32 +132,32 @@ Trace 写入路径：memory/thinking-traces/YYYY-MM-DD.jsonl
 
 ```
 mindforge-engine/
-├── README.md                    # 本文件（人类 + Agent 双视角）
-├── AGENT-INSTRUCTIONS.md        # Agent 专用集成指南
-├── LICENSE                      # MIT License
-├── RELEASE.md                   # 版本发布记录
+├── README.md                 # 本文件（人类 + Agent 双视角）
+├── AGENT-INSTRUCTIONS.md     # Agent 专用集成指南
+├── LICENSE                   # MIT License
+├── RELEASE.md                # 版本发布记录
 ├── openclaw/
-│   ├── SKILL.md                 # OpenClaw 技能定义
-│   ├── heartbeat.md             # 心跳监控配置
-│   └── openclaw-example.json    # 配置示例
+│   ├── SKILL.md              # OpenClaw 技能定义
+│   ├── heartbeat.md          # 心跳监控配置
+│   └── openclaw-example.json # 配置示例
 ├── scripts/
-│   ├── trace-writer.py          # Trace 写入工具
-│   ├── passed-rate-stats.py     # PASSED 率统计
-│   ├── engine-health.py         # 引擎健康检查
-│   ├── review-traces.py         # Trace 回顾分析
-│   ├── record-trace-auto.py     # 自动 Trace 记录
-│   └── ruige-auto-entry.py      # 对话 Trace 自动写入
+│   ├── trace-writer.py       # Trace 写入工具
+│   ├── passed-rate-stats.py  # PASSED 率统计
+│   ├── engine-health.py      # 引擎健康检查
+│   ├── review-traces.py      # Trace 回顾分析
+│   ├── record-trace-auto.py  # 自动 Trace 记录
+│   └── ruige-auto-entry.py   # 对话 Trace 自动写入
 ├── docs/
-│   ├── architecture.md          # 架构说明
-│   ├── quickstart.md            # 快速开始
-│   ├── trace-format.md          # Trace 格式详解
-│   └── best-practices.md        # 最佳实践
+│   ├── architecture.md       # 架构说明
+│   ├── quickstart.md         # 快速开始
+│   ├── trace-format.md       # Trace 格式详解
+│   └── best-practices.md     # 最佳实践
 ├── examples/
-│   ├── memory-template.md       # 记忆模板
-│   ├── cron-jobs-example.yaml   # Cron 任务示例
-│   └── thinking-trace-sample.jsonl  # Trace 样本
+│   ├── memory-template.md    # 记忆模板
+│   ├── cron-jobs-example.yaml # Cron 任务示例
+│   └── thinking-trace-sample.jsonl # Trace 样本
 └── tests/
-    └── manual-checklist.md      # 手动验证清单
+    └── manual-checklist.md   # 手动验证清单
 ```
 
 ---
@@ -158,7 +168,7 @@ mindforge-engine/
 
 ```bash
 # 1. 克隆
-git clone https://github.com/YOUR_USERNAME/mindforge-engine.git
+git clone https://github.com/nic75408/mindforge-engine.git
 cd mindforge-engine
 
 # 2. 安装（自动完成所有步骤）
@@ -206,7 +216,7 @@ openclaw gateway restart
 深索使用以下指标评估 Agent 回复质量：
 
 | 指标 | 含义 | 判定标准 |
-|------|------|---------|
+|------|------|----------|
 | **root_cause.passed** | 是否分析根因 | 技术问题必须分析根因，而非直接给方案 |
 | **essence.missing** | 是否缺失核心内容 | 必须包含事实/推理/验证分层 |
 | **da_quality** | 决策依据质量 | ≥50 字符，包含条件与后果 |
@@ -248,18 +258,23 @@ cat memory/thinking-traces/$(date +%Y-%m-%d).jsonl
 ## ❓ FAQ
 
 ### Q: 深索会降低回复速度吗？
+
 A: 会略微增加思考时间（约 10-20%），但回复质量显著提升。类似"系统 2"慢思考 vs "系统 1"快思考。
 
 ### Q: 不支持 OpenClaw 怎么办？
+
 A: 用"方式 2：自然语言遵循"。把链接发给你的 Agent，它会用自然语言遵循深索原则。
 
 ### Q: 如何卸载？
+
 A: 运行 `./uninstall.sh` 自动恢复配置。或手动删除 `skills/ruige-core/` 并恢复 `openclaw.json` 备份。
 
 ### Q: PASSED 率多少算合格？
+
 A: 观察期目标≥75%，稳定后目标≥80%。低于 70% 需检查配置是否正确。
 
 ### Q: 可以只启用部分功能吗？
+
 A: 可以。编辑 `SKILL.md` 注释掉不需要的检查项。但建议完整启用以获得最佳效果。
 
 ---
@@ -279,11 +294,10 @@ MIT License — 自由使用、修改、分发。详见 [LICENSE](LICENSE)。
 ---
 
 **🔗 相关链接**
-
-- GitHub: [待创建]
-- 文档：[待创建]
-- 问题反馈：[GitHub Issues](https://github.com/YOUR_USERNAME/mindforge-engine/issues)
+- GitHub: https://github.com/nic75408/mindforge-engine
+- 文档：[docs/](docs/)
+- 问题反馈：[GitHub Issues](https://github.com/nic75408/mindforge-engine/issues)
 
 ---
 
-_最后更新：2026-04-20_
+*最后更新：2026-04-20*
